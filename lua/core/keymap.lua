@@ -9,6 +9,11 @@ local keymap = vim.keymap -- for conciseness
 -- clear search highlights
 keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
 
+keymap.del("n", "grr")
+keymap.del("n", "gra")
+keymap.del("n", "gri")
+keymap.del("n", "grn")
+
 -- delete single character without copying into register
 -- keymap.set("n", "x", '"_x')
 
@@ -27,6 +32,9 @@ keymap.set("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "Close current tab" 
 keymap.set("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "Go to next tab" }) --  go to next tab
 keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "Go to previous tab" }) --  go to previous tab
 keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer in new tab" }) --  move current buffer to new tab
+
+keymap.set("n", "<leader>/", "<cmd>CommentToggle<CR>", { desc = "Toggle comments" }) -- open new tab
+keymap.set("v", "<leader>/", ":CommentToggle<CR>", { desc = "Toggle comments" }) -- open new tab
 
 -- make indentation in selection more like vs-code
 keymap.set("v", "<", "<gv", { desc = "Magically keep unindented block selected"})

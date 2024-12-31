@@ -49,7 +49,7 @@ return {
   dependencies = { "nvim-tree/nvim-web-devicons" },
   opts = {
     options = {
-      theme = my_lualine_theme,
+      theme = "moonfly",
     },
     sections = {
       lualine_x = {

@@ -28,7 +28,7 @@ return {
 
         -- set keybinds
         opts.desc = "Show LSP references"
-        keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts) -- show definition, references
+        keymap.set("n", "gr", "<cmd>Telescope lsp_references<CR>", opts) -- show definition, references
 
         opts.desc = "Go to declaration"
         keymap.set("n", "gD", vim.lsp.buf.declaration, opts) -- go to declaration
@@ -55,10 +55,22 @@ return {
         keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts) -- show diagnostics for line
 
         opts.desc = "Go to previous diagnostic"
-        keymap.set("n", "[d", vim.diagnostic.goto_prev, opts) -- jump to previous diagnostic in buffer
+        keymap.set("n", "[d", function()
+          local next = vim.diagnostic.get_next()
+          if (next) then
+            vim.diagnostic.jump({ diagnostic = next })
+          end
+        end, opts) -- jump to previous diagnostic in buffer
 
-        opts.desc = "Go to next diagnostic"
-        keymap.set("n", "]d", vim.diagnostic.goto_next, opts) -- jump to next diagnostic in buffer
+        keymap.set("n", "]d", function()
+          local prev = vim.diagnostic.get_prev()
+          if (prev) then
+            vim.diagnostic.jump({ diagnostic = prev })
+          end
+        end, opts) -- jump to previous diagnostic in buffer
+
+        -- keymap.set("n", "[d", vim.diagnostic.goto_next, opts) -- jump to next diagnostic in buffer
+        -- keymap.set("n", "]d", vim.diagnostic.goto_prev, opts) -- jump to next diagnostic in buffer
 
         opts.desc = "Show documentation for what is under cursor"
         keymap.set("n", "K", vim.lsp.buf.hover, opts) -- show documentation for what is under cursor
@@ -103,6 +115,13 @@ return {
           end,
         })
       end,
+      ["ts_ls"] = function()
+        -- configure graphql language server
+        lspconfig["ts_ls"].setup({
+          capabilities = capabilities,
+          filetypes = {  "typescriptreact", "javascriptreact", "typescript" },
+        })
+      end,
       ["graphql"] = function()
         -- configure graphql language server
         lspconfig["graphql"].setup({
@@ -122,6 +141,13 @@ return {
         lspconfig["haskell"].setup({
           capabilities = capabilities,
           filetypes = { "haskell" },
+        })
+      end,
+      ["zls"] = function()
+        -- configure haskell language server
+        lspconfig["zls"].setup({
+          capabilities = capabilities,
+          filetypes = { "zig" },
         })
       end,
       ["lua_ls"] = function()

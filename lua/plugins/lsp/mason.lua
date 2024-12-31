@@ -34,7 +34,8 @@ return {
         "prismals",
         "pyright",
         "rust_analyzer",
-        "haskell"
+        "haskell",
+        "typescript-language-server"
       },
     })
   end,
