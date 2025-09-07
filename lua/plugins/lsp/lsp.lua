@@ -11,12 +11,6 @@ return {
     -- import lspconfig plugin
     local lspconfig = require("lspconfig")
 
-    -- import mason_lspconfig plugin
-    local mason_lspconfig = require("mason-lspconfig")
-
-    -- import cmp-nvim-lsp plugin
-    local cmp_nvim_lsp = require("cmp_nvim_lsp")
-
     local keymap = vim.keymap -- for conciseness
 
     vim.api.nvim_create_autocmd("LspAttach", {
@@ -55,14 +49,14 @@ return {
         keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts) -- show diagnostics for line
 
         opts.desc = "Go to previous diagnostic"
-        keymap.set("n", "[d", function()
+        keymap.set("n", "]d", function()
           local next = vim.diagnostic.get_next()
           if (next) then
             vim.diagnostic.jump({ diagnostic = next })
           end
         end, opts) -- jump to previous diagnostic in buffer
 
-        keymap.set("n", "]d", function()
+        keymap.set("n", "[d", function()
           local prev = vim.diagnostic.get_prev()
           if (prev) then
             vim.diagnostic.jump({ diagnostic = prev })
@@ -79,9 +73,34 @@ return {
         keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
       end,
     })
-
+    -- import cmp-nvim-lsp plugin
+    local cmp_nvim_lsp = require("cmp_nvim_lsp")
     -- used to enable autocompletion (assign to every lsp server config)
     local capabilities = cmp_nvim_lsp.default_capabilities()
+
+    local servers = {"zls", "ocamllsp"}
+
+    for _, server_name in ipairs(servers) do
+      vim.lsp.config(server_name, {
+        capabilities = capabilities
+      })
+    end
+
+
+    vim.lsp.config('lua_ls', {
+      capabilities = capabilities,
+      settings = {
+        Lua = {
+          -- make the language server recognize "vim" global
+          diagnostics = {
+            globals = { "vim" },
+          },
+          completion = {
+            callSnippet = "Replace",
+          },
+        },
+      },
+    })
 
     lspconfig.gleam.setup({ capabilities = capabilities })
 
@@ -93,80 +112,80 @@ return {
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
     end
 
-    mason_lspconfig.setup_handlers({
-      -- default handler for installed servers
-      function(server_name)
-        lspconfig[server_name].setup({
-          capabilities = capabilities,
-        })
-      end,
-      ["svelte"] = function()
-        -- configure svelte server
-        lspconfig["svelte"].setup({
-          capabilities = capabilities,
-          on_attach = function(client, bufnr)
-            vim.api.nvim_create_autocmd("BufWritePost", {
-              pattern = { "*.js", "*.ts" },
-              callback = function(ctx)
-                -- Here use ctx.match instead of ctx.file
-                client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.match })
-              end,
-            })
-          end,
-        })
-      end,
-      ["ts_ls"] = function()
-        -- configure graphql language server
-        lspconfig["ts_ls"].setup({
-          capabilities = capabilities,
-          filetypes = {  "typescriptreact", "javascriptreact", "typescript" },
-        })
-      end,
-      ["graphql"] = function()
-        -- configure graphql language server
-        lspconfig["graphql"].setup({
-          capabilities = capabilities,
-          filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
-        })
-      end,
-      ["emmet_ls"] = function()
-        -- configure emmet language server
-        lspconfig["emmet_ls"].setup({
-          capabilities = capabilities,
-          filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
-        })
-      end,
-      ["haskell"] = function()
-        -- configure haskell language server
-        lspconfig["haskell"].setup({
-          capabilities = capabilities,
-          filetypes = { "haskell" },
-        })
-      end,
-      ["zls"] = function()
-        -- configure haskell language server
-        lspconfig["zls"].setup({
-          capabilities = capabilities,
-          filetypes = { "zig" },
-        })
-      end,
-      ["lua_ls"] = function()
-        -- configure lua server (with special settings)
-        lspconfig["lua_ls"].setup({
-          capabilities = capabilities,
-          settings = {
-            Lua = {
-              -- make the language server recognize "vim" global
-              diagnostics = {
-                globals = { "vim" },
-              },
-              completion = {
-                callSnippet = "Replace",
-              },
-            },
-          },
-        })
-      end,
-    })
+    -- mason_lspconfig.setup_handlers({
+    --   -- default handler for installed servers
+    --   function(server_name)
+    --     lspconfig[server_name].setup({
+    --       capabilities = capabilities,
+    --     })
+    --   end,
+    --   ["svelte"] = function()
+    --     -- configure svelte server
+    --     lspconfig["svelte"].setup({
+    --       capabilities = capabilities,
+    --       on_attach = function(client, bufnr)
+    --         vim.api.nvim_create_autocmd("BufWritePost", {
+    --           pattern = { "*.js", "*.ts" },
+    --           callback = function(ctx)
+    --             -- Here use ctx.match instead of ctx.file
+    --             client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.match })
+    --           end,
+    --         })
+    --       end,
+    --     })
+    --   end,
+    --   ["ts_ls"] = function()
+    --     -- configure graphql language server
+    --     lspconfig["ts_ls"].setup({
+    --       capabilities = capabilities,
+    --       filetypes = {  "typescriptreact", "javascriptreact", "typescript" },
+    --     })
+    --   end,
+    --   ["graphql"] = function()
+    --     -- configure graphql language server
+    --     lspconfig["graphql"].setup({
+    --       capabilities = capabilities,
+    --       filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
+    --     })
+    --   end,
+    --   ["pyright"] = function()
+    --     -- configure graphql language server
+    --     lspconfig["pyright"].setup({
+    --       capabilities = capabilities,
+    --       filetypes = { "python" },
+    --     })
+    --   end,
+    --   ["emmet_ls"] = function()
+    --     -- configure emmet language server
+    --     lspconfig["emmet_ls"].setup({
+    --       capabilities = capabilities,
+    --       filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
+    --     })
+    --   end,
+    --   ["zls"] = function()
+    --     -- configure haskell language server
+    --     lspconfig["zls"].setup({
+    --       capabilities = capabilities,
+    --       filetypes = { "zig" },
+    --     })
+    --   end,
+    --   ["gopls"] = function()
+    --     -- configure haskell language server
+    --     lspconfig["gopls"].setup({
+    --       capabilities = capabilities,
+    --       filetypes = { "go" },
+    --     })
+    --   end,
+    --   ["lua_ls"] = function()
+    --     -- configure lua server (with special settings)
+    --     lspconfig["lua_ls"].setup()
+    --   end,
+    --   ["ocamllsp"] = function()
+    --     lspconfig["ocamllsp"].setup({
+    --       capabilities = capabilities,
+    --       filetypes = { "ocaml" }
+    --     })
+    --   end
+    -- })
   end,
 }

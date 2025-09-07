@@ -34,8 +34,8 @@ return {
         "prismals",
         "pyright",
         "rust_analyzer",
-        "haskell",
-        "typescript-language-server"
+        "gopls",
+        "ocamllsp",
       },
     })
   end,
